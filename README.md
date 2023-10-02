@@ -1,5 +1,6 @@
 # DevHandy
-A tool for game developers that need to save images and music quickly and convert images and music quickly.
+A tool for game developers that need to save images and music quickly and convert images and music quickly. <br>
+Written in WinForms using opencv-sharp.<br>
 
 # Have-Done
 Image conversion
