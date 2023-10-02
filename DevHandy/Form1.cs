@@ -9,18 +9,23 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using OpenCvSharp;
+using NAudio.Wave;
+using System.IO;
 
 namespace DevHandy
 {
     public partial class Form1 : Form
     {
         public string SelectedFilePath { get; set; }
+        private string inputFile = string.Empty;
+        private string outputFile = string.Empty;
+
 
         public Form1()
         {
             InitializeComponent();
         }
-      
+        
         private void button1_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -70,7 +75,91 @@ namespace DevHandy
 
         }
 
+        private void ConvertToMp3()
+        {
+            using (var reader = new AudioFileReader(inputFile))
+            {
+                MediaFoundationEncoder.EncodeToMp3(reader, outputFile);
+            }
+        }
+
+        private void ConvertToWav()
+        {
+            using (var reader = new AudioFileReader(inputFile))
+            {
+                WaveFileWriter.CreateWaveFile(outputFile, reader);
+            }
+        }
+
+
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        //audio load
+        private void button3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+          //  openFileDialog.Filter = "Audio Files|*.wav|All Files|*.*"; // Limit input to WAV files for simplicity
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                inputFile = openFileDialog.FileName;
+                label5.Text = $"Input File: {inputFile}";
+            }
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(inputFile))
+            {
+                MessageBox.Show("Please select an input audio file.");
+                return;
+            }
+
+            string selectedFormat = comboBox2.Text; // Get the selected output format from the ComboBox
+
+            string fileExtension = Path.GetExtension(inputFile).ToLower();
+
+            if (fileExtension == ".wav" && comboBox2.Text == ".wav")
+            {
+                MessageBox.Show("Woah buddy do not convert a wav to wav.");
+                return;
+            }
+            else if (fileExtension == ".mp3" && comboBox2.Text == ".mp3")
+            {
+                MessageBox.Show("Woah buddy do not convert a mp3 to mp3.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(selectedFormat))
+            {
+                MessageBox.Show("Please select an output format.");
+                return;
+            }
+
+            outputFile = System.IO.Path.ChangeExtension(inputFile, selectedFormat);
+
+            if (selectedFormat == ".mp3")
+            {
+                ConvertToMp3();
+            }
+            else if (selectedFormat == ".wav")
+            {
+                ConvertToWav();
+            }
+
+            MessageBox.Show($"Conversion completed. Output file: {outputFile}");
+        }
+    
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
